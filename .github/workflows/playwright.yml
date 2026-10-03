@@ -1,0 +1,134 @@
+name: Playwright E2E Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'frontend/**'
+      - 'e2e/**'
+      - 'playwright.config.ts'
+      - '.github/workflows/playwright.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'frontend/**'
+      - 'e2e/**'
+      - 'playwright.config.ts'
+      - '.github/workflows/playwright.yml'
+  schedule:
+    # Run tests daily at 02:00 UTC against production CF deployment
+    - cron: '0 2 * * *'
+
+jobs:
+  test-local:
+    name: Test Local Dev Server
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: bunx playwright test
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  test-staging:
+    name: Test CF Pages Staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: test-local
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps
+
+      - name: Wait for CF Pages deployment
+        run: |
+          # Wait up to 5 minutes for CF Pages deployment to be ready
+          for i in {1..30}; do
+            if curl -s https://dockworker-staging.pages.dev > /dev/null; then
+              echo "Staging deployment ready"
+              exit 0
+            fi
+            echo "Waiting for deployment... ($i/30)"
+            sleep 10
+          done
+          echo "Timeout waiting for deployment"
+          exit 1
+
+      - name: Run Playwright tests against staging
+        run: bunx playwright test --project=chromium
+        env:
+          BASE_URL: https://dockworker-staging.pages.dev
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-staging
+          path: playwright-report/
+          retention-days: 30
+
+  test-production:
+    name: Test Production CF Deployment
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 2 * * *'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps
+
+      - name: Run Playwright tests against production
+        run: bunx playwright test --project=chromium --reporter=list
+        env:
+          BASE_URL: https://dockworker.ai
+        continue-on-error: true
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-production
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Report test results
+        if: failure()
+        run: echo "Production health check failed. Check artifacts for details."

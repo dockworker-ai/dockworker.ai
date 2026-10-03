@@ -1,0 +1,23 @@
+{
+  "name": "dockworker-ai",
+  "version": "0.1.0",
+  "description": "Production-grade multi-tenant container build platform",
+  "type": "module",
+  "scripts": {
+    "dev": "cd frontend && bun run dev",
+    "build": "cd frontend && bun run build",
+    "test": "cd backend && cargo test && cd .. && bun run test:e2e",
+    "test:e2e": "playwright test",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:local": "BASE_URL=http://localhost:3000 playwright test",
+    "test:e2e:staging": "BASE_URL=https://dockworker-staging.pages.dev playwright test --project=chromium",
+    "test:e2e:prod": "BASE_URL=https://dockworker.ai playwright test --project=chromium --reporter=list"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.1"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
