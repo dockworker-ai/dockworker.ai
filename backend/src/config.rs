@@ -8,6 +8,7 @@ pub struct Config {
     pub stripe_secret_key: String,
     pub jwt_secret: String,
     pub redis_url: String,
+    pub registry_storage_path: Option<String>,
 }
 
 impl Config {
@@ -23,6 +24,7 @@ impl Config {
             jwt_secret: std::env::var("JWT_SECRET")?,
             redis_url: std::env::var("REDIS_URL")
                 .unwrap_or_else(|_| "redis://localhost:6379".to_string()),
+            registry_storage_path: std::env::var("REGISTRY_STORAGE_PATH").ok(),
         })
     }
 }

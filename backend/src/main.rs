@@ -6,6 +6,7 @@ mod auth;
 mod quota;
 mod runner_job;
 mod runner_controller;
+mod registry;
 
 use axum::{
     routing::{get, post},
@@ -23,7 +24,18 @@ async fn main() -> anyhow::Result<()> {
     let db = db::Database::connect(&config.database_url).await?;
     let db = Arc::new(db);
 
-    let app = Router::new()
+    // Initialize registry service
+    let registry_state = Arc::new(registry::RegistryState::new(
+        db.clone(),
+        config
+            .registry_storage_path
+            .unwrap_or_else(|| "/var/lib/dockworker/blobs".to_string()),
+    ));
+
+    // Start ephemeral GC worker (non-blocking)
+    tokio::spawn(registry::gc::start_gc_worker(db.clone()));
+
+    let control_plane_router = Router::new()
         // Health check
         .route("/health", get(api::health))
 
@@ -47,8 +59,20 @@ async fn main() -> anyhow::Result<()> {
         .layer(CorsLayer::permissive())
         .with_state(db);
 
+    // OCI Distribution v1.1 registry routes (separate from control plane)
+    let registry_router = registry::routes().with_state(registry_state);
+
+    // Combine routers
+    let app = Router::new()
+        .nest("/", control_plane_router)
+        .nest("/", registry_router);
+
     let listener = tokio::net::TcpListener::bind(&config.listen_addr).await?;
-    tracing::info!("Server listening on {}", config.listen_addr);
+    tracing::info!(
+        "dockworker control plane listening on {}",
+        config.listen_addr
+    );
+    tracing::info!("OCI registry available at /v2/");
 
     axum::serve(listener, app).await?;
     Ok(())
