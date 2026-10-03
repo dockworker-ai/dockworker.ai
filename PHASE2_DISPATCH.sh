@@ -39,6 +39,16 @@ og-cli job submit \
   --context-files k8s/cilium-network-policy.yaml,k8s/test-job.yaml,k8s/README.md \
   --labels phase2,network,kubernetes
 
+# Content Audit (parallel, independent)
+echo "📝 Submitting Content Audit: dockworker.ai web app..."
+og-cli job submit \
+  --name "content-audit" \
+  --title "Content Audit: dockworker.ai Web App" \
+  --description "Full text review for accuracy, tone, grammar, and brand consistency" \
+  --agent cursor-content \
+  --branch feature/content-audit \
+  --labels phase2,content-review,qa
+
 # Task 3: Manifest Handlers Wiring (depends on Tasks 1 & 2)
 echo "⏳ Task 3 (Manifest Handlers) will be submitted after Tasks 1 & 2 complete..."
 echo ""
@@ -49,6 +59,7 @@ echo "  og-cli job list --status in-progress"
 echo "  og-cli job status phase2-sql-queries"
 echo "  og-cli job status phase2-jwt-auth"
 echo "  og-cli job status phase2-cilium-test"
+echo "  og-cli job status content-audit"
 echo ""
 echo "View results:"
 echo "  og-cli job logs phase2-sql-queries"
