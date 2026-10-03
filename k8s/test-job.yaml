@@ -1,0 +1,79 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dockworker-test-build
+  namespace: dockworker-runners
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 120
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: build-runner
+        dockworker.ai/test: "true"
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      hostUsers: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: builder
+          image: moby/buildkit:v0.26.2-rootless
+          command: ["buildctl-daemonless.sh"]
+          args:
+            - build
+            - "--frontend=dockerfile.v0"
+            - "--local=context=/workspace"
+            - "--local=dockerfile=/workspace"
+            - "--output=type=oci,dest=/tmp/output.tar"
+            - "--progress=plain"
+          env:
+            - name: BUILDKITD_FLAGS
+              value: "--root=/scratch/buildkit --oci-worker-no-process-sandbox"
+            - name: XDG_RUNTIME_DIR
+              value: /run/user/1000
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: "1500m"
+              memory: "2Gi"
+              ephemeral-storage: "10Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+              ephemeral-storage: "18Gi"
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: scratch-storage
+              mountPath: /scratch
+            - name: run-dir
+              mountPath: /run/user/1000
+            - name: tmp-dir
+              mountPath: /tmp
+      volumes:
+        - name: workspace
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: scratch-storage
+          emptyDir:
+            sizeLimit: 24Gi
+        - name: run-dir
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi
+        - name: tmp-dir
+          emptyDir:
+            sizeLimit: 512Mi

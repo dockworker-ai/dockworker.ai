@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+  - ../../
+
+namePrefix: k8s-pre130-
+
+commonLabels:
+  k8s-version: "pre-1.30"
+  user-namespaces: "disabled"
+
+patchesStrategicMerge:
+  - job-patch.yaml
+
+namespace: dockworker-runners
