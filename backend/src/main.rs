@@ -32,7 +32,9 @@ async fn main() -> anyhow::Result<()> {
         db.clone(),
         config
             .registry_storage_path
+            .clone()
             .unwrap_or_else(|| "/var/lib/dockworker/blobs".to_string()),
+        config.jwt_secret.clone(),
     ));
 
     let app = Router::new()
@@ -58,8 +60,9 @@ async fn main() -> anyhow::Result<()> {
 
         .layer(CorsLayer::permissive())
         .with_state(db)
-        // Registry routes (OCI Distribution v1.1)
-        .nest("/v2", registry::routes().with_state(registry_state));
+        // Registry routes (OCI Distribution v1.1).
+        // nest_service matches both /v2 and /v2/. OCI clients ping the trailing-slash form.
+        .nest_service("/v2", registry::routes().with_state(registry_state));
 
     let listener = tokio::net::TcpListener::bind(&config.listen_addr).await?;
     tracing::info!(
