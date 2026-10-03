@@ -1,5 +1,5 @@
 use crate::runner_job::{create_runner_job_manifest, BuildJobParams};
-use futures::{AsyncBufReadExt, Stream, StreamExt, TryStreamExt};
+use futures::{AsyncBufReadExt, Stream, TryStreamExt};
 use k8s_openapi::api::batch::v1::Job;
 use k8s_openapi::api::core::v1::Pod;
 use kube::{
@@ -10,7 +10,7 @@ use std::time::Duration;
 use thiserror::Error;
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::ReceiverStream;
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 
 #[derive(Error, Debug)]
 pub enum RunnerError {

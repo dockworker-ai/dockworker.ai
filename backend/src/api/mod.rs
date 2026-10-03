@@ -4,9 +4,9 @@ pub mod user;
 pub mod admin;
 
 use axum::http::StatusCode;
-use axum::response::IntoResponse;
+use axum::Json;
 use serde_json::json;
 
-pub async fn health() -> impl IntoResponse {
-    (StatusCode::OK, json!({"status": "healthy"}))
+pub async fn health() -> (StatusCode, Json<serde_json::Value>) {
+    (StatusCode::OK, Json(json!({"status": "healthy"})))
 }

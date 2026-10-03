@@ -10,7 +10,7 @@ use serde_json::json;
 
 pub async fn trigger(
     State(_db): State<Arc<Database>>,
-    Json(req): Json<BuildRequest>,
+    Json(_req): Json<BuildRequest>,
 ) -> impl IntoResponse {
     // TODO: Validate user quota
     // TODO: Enqueue build job
@@ -20,7 +20,7 @@ pub async fn trigger(
 
 pub async fn get_status(
     State(_db): State<Arc<Database>>,
-    Path(build_id): Path<String>,
+    Path(_build_id): Path<String>,
 ) -> impl IntoResponse {
     // TODO: Query build status from DB
     (StatusCode::OK, Json(json!({"status": "RUNNING"})))
@@ -28,7 +28,7 @@ pub async fn get_status(
 
 pub async fn stream_logs(
     State(_db): State<Arc<Database>>,
-    Path(build_id): Path<String>,
+    Path(_build_id): Path<String>,
 ) -> impl IntoResponse {
     // TODO: Implement Server-Sent Events (SSE) streaming
     (StatusCode::OK, "")

@@ -6,12 +6,12 @@ pub struct Claims {
     pub exp: i64,
 }
 
-pub fn verify_token(token: &str) -> Option<Claims> {
+pub fn verify_token(_token: &str) -> Option<Claims> {
     // TODO: Implement JWT verification
     None
 }
 
-pub fn generate_token(user_id: &str, username: &str) -> String {
+pub fn generate_token(_user_id: &str, _username: &str) -> String {
     // TODO: Implement JWT generation
     String::new()
 }
