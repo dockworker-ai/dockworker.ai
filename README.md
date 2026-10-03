@@ -10,7 +10,7 @@ A free build is a Kubernetes Job. The pod is non-root, uses a user namespace, ru
 | [`frontend/`](frontend/) | Console. |
 | [`docs/planning/`](docs/planning/README.md) | Epics and user stories. The first epic is [E1, the free-tier runner](docs/planning/epics/E1-free-tier-runner.md). |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Production architecture. |
-| [`design/site/`](design/site/) | Marketing page source. It is not this product. |
+| [`intersting/`](intersting/) | Marketing page from the current checkout zip. Not the product. |
 
 ## Local
 
