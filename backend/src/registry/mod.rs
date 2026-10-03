@@ -38,13 +38,21 @@ impl RegistryState {
         }
     }
 
-    #[cfg(test)]
-    pub fn for_tests(storage_path: std::path::PathBuf, jwt_secret: impl Into<String>) -> Self {
+    /// Blob and manifest storage with no Postgres. Used by `REGISTRY_ONLY=1`.
+    pub fn standalone(
+        storage_path: impl Into<std::path::PathBuf>,
+        jwt_secret: impl Into<String>,
+    ) -> Self {
         Self {
             db: None,
-            storage: storage::CasBackend::new(storage_path),
+            storage: storage::CasBackend::new(storage_path.into()),
             jwt_secret: jwt_secret.into(),
         }
+    }
+
+    #[cfg(test)]
+    pub fn for_tests(storage_path: std::path::PathBuf, jwt_secret: impl Into<String>) -> Self {
+        Self::standalone(storage_path, jwt_secret)
     }
 }
 
