@@ -1,0 +1,63 @@
+name: Rust CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/rust.yml'
+      - 'Cargo.toml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/rust.yml'
+      - 'Cargo.toml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: backend
+
+      - name: Run tests
+        working-directory: backend
+        run: cargo test --verbose
+
+      - name: Check formatting
+        working-directory: backend
+        run: cargo fmt --check
+
+      - name: Lint with clippy
+        working-directory: backend
+        run: cargo clippy -- -D warnings
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: backend
+
+      - name: Build backend
+        working-directory: backend
+        run: cargo build --release --verbose
+
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: rustsec/audit-check-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
