@@ -1,0 +1,103 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: dockworker-egress-layer7
+  namespace: dockworker-runners
+  labels:
+    app.kubernetes.io/name: dockworker
+    app.kubernetes.io/component: build-runners
+spec:
+  description: "Phase 2: Layer 7 egress filtering for build pods. Allows DNS, container registries, and dockworker registry."
+
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/component: build-runner
+
+  egress:
+    # Allow DNS for all external resolution
+    - to:
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: "53"
+      description: "DNS queries (UDP port 53)"
+
+    # Allow HTTPS to public container registries (Docker Hub, GHCR, Quay, etc.)
+    - toFqdns:
+        # Docker Hub CDN
+        - matchPattern: "*.docker.com"
+        - matchPattern: "*.docker.io"
+        - matchPattern: "production.cloudflare.docker.com"
+        - matchPattern: "*.cloudfront.net"
+
+        # GitHub Container Registry
+        - matchPattern: "ghcr.io"
+        - matchPattern: "*.pkg.github.com"
+
+        # Quay
+        - matchPattern: "quay.io"
+
+        # AWS ECR
+        - matchPattern: "*.dkr.ecr.*.amazonaws.com"
+
+        # Azure Container Registry
+        - matchPattern: "*.azurecr.io"
+
+        # Google Artifact Registry / GCR
+        - matchPattern: "*.pkg.dev"
+        - matchPattern: "gcr.io"
+
+        # dockworker.ai registry (cache + artifact storage)
+        - matchPattern: "registry.dockworker.ai"
+      ports:
+        - protocol: TCP
+          port: "443"
+      description: "HTTPS to container registries (port 443)"
+
+    # Allow HTTP fallback for legacy registries
+    - toFqdns:
+        - matchPattern: "*.docker.io"
+        - matchPattern: "registry.dockworker.ai"
+      ports:
+        - protocol: TCP
+          port: "80"
+      description: "HTTP fallback for image pulls (port 80)"
+
+    # Allow egress to Kubernetes API (for secrets, if needed)
+    - to:
+        - podSelector:
+            matchLabels:
+              component: kube-apiserver
+      ports:
+        - protocol: TCP
+          port: "443"
+      description: "Kubernetes API (port 443)"
+
+  # Deny all other egress (default deny)
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: dockworker-deny-all-ingress
+  namespace: dockworker-runners
+  labels:
+    app.kubernetes.io/name: dockworker
+    app.kubernetes.io/component: build-runners
+spec:
+  description: "Phase 1: Deny all inbound traffic to build pods"
+
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/component: build-runner
+
+  policyTypes:
+    - Ingress
+
+  # Empty ingress rules = default deny
+  ingress: []
