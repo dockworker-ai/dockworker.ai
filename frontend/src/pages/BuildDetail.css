@@ -1,0 +1,33 @@
+.build-detail {
+  max-width: 1200px;
+}
+
+.back-button {
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  background-color: var(--border);
+  color: var(--text);
+}
+
+.back-button:hover {
+  background-color: var(--border);
+  opacity: 0.8;
+}
+
+.terminal {
+  background-color: #1f2937;
+  color: #d1d5db;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 0.875rem;
+  min-height: 400px;
+  border: 1px solid var(--border);
+}
+
+.terminal pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

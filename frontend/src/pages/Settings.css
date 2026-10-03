@@ -1,0 +1,44 @@
+.settings {
+  max-width: 600px;
+}
+
+section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+section h2 {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+}
+
+.setting-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.setting-row label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.setting-row input {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .setting-row {
+    grid-template-columns: 1fr;
+  }
+
+  .setting-row label {
+    margin-bottom: 0.25rem;
+  }
+}
