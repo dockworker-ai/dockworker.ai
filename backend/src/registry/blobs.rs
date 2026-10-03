@@ -1,18 +1,19 @@
 use axum::{
     extract::{Path, State},
-    http::{header, StatusCode},
+    http::{header, StatusCode, HeaderMap},
     response::IntoResponse,
 };
 use std::sync::Arc;
-use uuid::Uuid;
 
 use crate::registry::RegistryState;
 
 /// POST /v2/<name>/blobs/uploads/ - Initiate blob upload
 pub async fn initiate_upload(
-    State(registry): State<Arc<RegistryState>>,
+    State(_registry): State<Arc<RegistryState>>,
     Path(name): Path<String>,
 ) -> impl IntoResponse {
+    use uuid::Uuid;
+
     let upload_id = Uuid::new_v4().to_string();
 
     // TODO: Create staging upload entry in database
@@ -20,14 +21,12 @@ pub async fn initiate_upload(
 
     let location = format!("/v2/{}/blobs/uploads/{}", name, upload_id);
 
-    (
-        StatusCode::ACCEPTED,
-        [
-            (header::LOCATION, location.as_str()),
-            (header::DOCKER_UPLOAD_UUID, upload_id.as_str()),
-            (header::RANGE, "0-0"),
-        ],
-    )
+    let mut headers = HeaderMap::new();
+    headers.insert(header::LOCATION, location.parse().unwrap());
+    headers.insert("Docker-Upload-UUID", upload_id.parse().unwrap());
+    headers.insert(header::RANGE, "0-0".parse().unwrap());
+
+    (StatusCode::ACCEPTED, headers)
 }
 
 /// PATCH /v2/<name>/blobs/uploads/<uuid> - Append blob chunk
@@ -44,7 +43,7 @@ pub async fn patch_upload(
 
 /// PUT /v2/<name>/blobs/uploads/<uuid>?digest=<sha256:...> - Finalize upload
 pub async fn complete_upload(
-    State(registry): State<Arc<RegistryState>>,
+    State(_registry): State<Arc<RegistryState>>,
     Path((_name, _uuid)): Path<(String, String)>,
 ) -> impl IntoResponse {
     // TODO: Verify digest matches final blob

@@ -13,7 +13,7 @@ use crate::registry::RegistryState;
 pub async fn put_manifest(
     State(_registry): State<Arc<RegistryState>>,
     Path((_name, _reference)): Path<(String, String)>,
-    body: Json<Value>,
+    Json(_body): Json<Value>,
 ) -> impl IntoResponse {
     // TODO: Compute SHA-256 digest of manifest JSON
     // TODO: Validate all referenced blob digests exist
@@ -45,7 +45,7 @@ pub async fn get_manifest(
     StatusCode::OK
 }
 
-/// DELETE /v2/<name>/manifests/<reference> - Explicit manifest deletion
+/// DELETE /v2/<name>/manifests/<reference> - Delete manifest by digest
 pub async fn delete_manifest(
     State(_registry): State<Arc<RegistryState>>,
     Path((_name, _reference)): Path<(String, String)>,

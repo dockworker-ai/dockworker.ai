@@ -24,7 +24,10 @@ async fn main() -> anyhow::Result<()> {
     let db = db::Database::connect(&config.database_url).await?;
     let db = Arc::new(db);
 
-    // Initialize registry service
+    // Start ephemeral GC worker (non-blocking)
+    tokio::spawn(registry::gc::start_gc_worker(db.clone()));
+
+    // Initialize registry service state
     let registry_state = Arc::new(registry::RegistryState::new(
         db.clone(),
         config
@@ -32,10 +35,7 @@ async fn main() -> anyhow::Result<()> {
             .unwrap_or_else(|| "/var/lib/dockworker/blobs".to_string()),
     ));
 
-    // Start ephemeral GC worker (non-blocking)
-    tokio::spawn(registry::gc::start_gc_worker(db.clone()));
-
-    let control_plane_router = Router::new()
+    let app = Router::new()
         // Health check
         .route("/health", get(api::health))
 
@@ -57,15 +57,9 @@ async fn main() -> anyhow::Result<()> {
         .route("/admin/stats", get(api::admin::get_stats))
 
         .layer(CorsLayer::permissive())
-        .with_state(db);
-
-    // OCI Distribution v1.1 registry routes (separate from control plane)
-    let registry_router = registry::routes().with_state(registry_state);
-
-    // Combine routers
-    let app = Router::new()
-        .nest("/", control_plane_router)
-        .nest("/", registry_router);
+        .with_state(db)
+        // Registry routes (OCI Distribution v1.1)
+        .nest("/v2", registry::routes().with_state(registry_state));
 
     let listener = tokio::net::TcpListener::bind(&config.listen_addr).await?;
     tracing::info!(

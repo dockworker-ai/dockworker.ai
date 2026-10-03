@@ -28,7 +28,7 @@ pub struct TokenResponse {
 /// Example: `repository:builds/usr_abc123:pull,push`
 pub async fn issue_token(
     State(_registry): State<Arc<RegistryState>>,
-    Query(req): Query<TokenRequest>,
+    Query(_req): Query<TokenRequest>,
 ) -> impl IntoResponse {
     // TODO: Validate scope against tenant/build permissions
     // TODO: Issue JWT with exp, sub (build_id), scope claims
@@ -46,7 +46,7 @@ pub async fn issue_token(
 }
 
 /// Verify bearer token scope against requested action
-pub fn verify_scope_access(token: &str, scope: &str, action: &str) -> bool {
+pub fn verify_scope_access(_token: &str, _scope: &str, _action: &str) -> bool {
     // TODO: Decode JWT, extract scope claim
     // TODO: Validate requested action against allowed scope
     // Example: scope="repository:builds/free-*:pull,push", action="pull" → true

@@ -3,9 +3,9 @@ pub mod auth;
 pub mod blobs;
 pub mod manifests;
 pub mod storage;
+pub mod gc;
 
 use axum::{
-    extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
     routing::{delete, get, head, patch, post, put},
@@ -41,25 +41,25 @@ pub async fn v2_check() -> impl IntoResponse {
 pub fn routes() -> Router<Arc<RegistryState>> {
     Router::new()
         // Version check (OCI Distribution spec ping)
-        .route("/v2/", get(v2_check))
+        .route("/", get(v2_check))
 
         // Blob upload endpoints
-        .route("/v2/:name/blobs/uploads/", post(blobs::initiate_upload))
-        .route("/v2/:name/blobs/uploads/:uuid", patch(blobs::patch_upload))
-        .route("/v2/:name/blobs/uploads/:uuid", put(blobs::complete_upload))
+        .route("/:name/blobs/uploads/", post(blobs::initiate_upload))
+        .route("/:name/blobs/uploads/:uuid", patch(blobs::patch_upload))
+        .route("/:name/blobs/uploads/:uuid", put(blobs::complete_upload))
 
         // Blob fetch/exists
-        .route("/v2/:name/blobs/:digest", head(blobs::head_blob))
-        .route("/v2/:name/blobs/:digest", get(blobs::get_blob))
+        .route("/:name/blobs/:digest", head(blobs::head_blob))
+        .route("/:name/blobs/:digest", get(blobs::get_blob))
 
         // Manifest operations
-        .route("/v2/:name/manifests/:reference", put(manifests::put_manifest))
-        .route("/v2/:name/manifests/:reference", head(manifests::head_manifest))
-        .route("/v2/:name/manifests/:reference", get(manifests::get_manifest))
-        .route("/v2/:name/manifests/:reference", delete(manifests::delete_manifest))
+        .route("/:name/manifests/:reference", put(manifests::put_manifest))
+        .route("/:name/manifests/:reference", head(manifests::head_manifest))
+        .route("/:name/manifests/:reference", get(manifests::get_manifest))
+        .route("/:name/manifests/:reference", delete(manifests::delete_manifest))
 
         // Token endpoint for scoped auth
-        .route("/v2/token", post(auth::issue_token))
+        .route("/token", post(auth::issue_token))
 
         .layer(CorsLayer::permissive())
 }
