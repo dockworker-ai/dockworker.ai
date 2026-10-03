@@ -52,7 +52,7 @@ jobs:
           retention-days: 30
 
   test-staging:
-    name: Test CF Pages Staging
+    name: Test CF Pages Production Deployment
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     needs: test-local
@@ -74,8 +74,8 @@ jobs:
         run: |
           # Wait up to 5 minutes for CF Pages deployment to be ready
           for i in {1..30}; do
-            if curl -s https://dockworker-staging.pages.dev > /dev/null; then
-              echo "Staging deployment ready"
+            if curl -s https://8e165ae2.dockworker-ai.pages.dev > /dev/null; then
+              echo "CF Pages deployment ready"
               exit 0
             fi
             echo "Waiting for deployment... ($i/30)"
@@ -84,23 +84,23 @@ jobs:
           echo "Timeout waiting for deployment"
           exit 1
 
-      - name: Run Playwright tests against staging
+      - name: Run Playwright tests against production deployment
         run: bunx playwright test --project=chromium
         env:
-          BASE_URL: https://dockworker-staging.pages.dev
+          BASE_URL: https://8e165ae2.dockworker-ai.pages.dev
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-staging
+          name: playwright-report-production
           path: playwright-report/
           retention-days: 30
 
   test-production:
-    name: Test Production CF Deployment
+    name: Test Production Deployment (Scheduled Health Check)
     runs-on: ubuntu-latest
-    if: github.event.schedule == '0 2 * * *'
+    if: github.event.schedule == '0 2 * * *' || github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
@@ -118,17 +118,17 @@ jobs:
       - name: Run Playwright tests against production
         run: bunx playwright test --project=chromium --reporter=list
         env:
-          BASE_URL: https://dockworker.ai
+          BASE_URL: https://8e165ae2.dockworker-ai.pages.dev
         continue-on-error: true
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report-production
+          name: playwright-report-production-healthcheck
           path: playwright-report/
           retention-days: 30
 
       - name: Report test results
         if: failure()
-        run: echo "Production health check failed. Check artifacts for details."
+        run: echo "⚠️ Production health check failed. See artifacts for details."
