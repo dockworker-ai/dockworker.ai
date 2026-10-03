@@ -11,8 +11,8 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:local": "BASE_URL=http://localhost:3000 playwright test",
-    "test:e2e:prod": "BASE_URL=https://8e165ae2.dockworker-ai.pages.dev playwright test --project=chromium --reporter=list",
-    "test:e2e:health": "BASE_URL=https://8e165ae2.dockworker-ai.pages.dev playwright test --project=chromium e2e/landing-page.spec.ts e2e/performance-and-cdn.spec.ts"
+    "test:e2e:prod": "BASE_URL=https://dockworker.ai playwright test --project=chromium --reporter=list",
+    "test:e2e:health": "BASE_URL=https://dockworker.ai playwright test --project=chromium e2e/landing-page.spec.ts e2e/performance-and-cdn.spec.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.1"

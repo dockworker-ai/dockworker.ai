@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: process.env.BASE_URL || 'https://8e165ae2.dockworker-ai.pages.dev',
+    baseURL: process.env.BASE_URL || 'https://dockworker.ai',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     navigationTimeout: 30000,

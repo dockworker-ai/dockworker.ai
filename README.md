@@ -13,7 +13,7 @@ Production-grade multi-tenant container build platform. Free tier: each build is
 
 ## Deployment
 
-**Design (CF Pages):** https://8e165ae2.dockworker-ai.pages.dev/
+**🎉 LIVE:** https://dockworker.ai/ — Figma design deployed to CF Pages with DNS cutover
 
 **Local Development**
 
@@ -59,9 +59,9 @@ BASE_URL="https://8e165ae2.dockworker-ai.pages.dev" bun run test:e2e
 
 ## Status
 
-- ✅ **Design:** Figma → React/Vite deployed to CF Pages
+- ✅ **Design:** Figma → React/Vite deployed to CF Pages + **DNS live at dockworker.ai**
+- ✅ **Playwright E2E:** 28 tests, run on every main push against https://dockworker.ai
 - ✅ **Backend:** Rust skeleton + Kubernetes Job runner (runner_job.rs, runner_controller.rs)
-- ✅ **E2E Tests:** Playwright suite updated for new design (landing-page, auth, build-flow, performance)
 - ✅ **Phase 1 K8s:** Namespace, quotas, network policy, user namespace support
 - 🔄 **Phase 1 Testing:** Ready to run 100 clean builds (no pod evictions)
 - ⏳ **Phase 2:** Network hardening (Cilium eBPF, egress filtering)

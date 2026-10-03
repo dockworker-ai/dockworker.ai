@@ -70,12 +70,12 @@ jobs:
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps
 
-      - name: Wait for CF Pages deployment
+      - name: Wait for production deployment
         run: |
-          # Wait up to 5 minutes for CF Pages deployment to be ready
+          # Wait up to 5 minutes for production deployment to be ready
           for i in {1..30}; do
-            if curl -s https://8e165ae2.dockworker-ai.pages.dev > /dev/null; then
-              echo "CF Pages deployment ready"
+            if curl -s https://dockworker.ai > /dev/null; then
+              echo "Production deployment ready"
               exit 0
             fi
             echo "Waiting for deployment... ($i/30)"
@@ -84,10 +84,10 @@ jobs:
           echo "Timeout waiting for deployment"
           exit 1
 
-      - name: Run Playwright tests against production deployment
+      - name: Run Playwright tests against production
         run: bunx playwright test --project=chromium
         env:
-          BASE_URL: https://8e165ae2.dockworker-ai.pages.dev
+          BASE_URL: https://dockworker.ai
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
@@ -118,7 +118,7 @@ jobs:
       - name: Run Playwright tests against production
         run: bunx playwright test --project=chromium --reporter=list
         env:
-          BASE_URL: https://8e165ae2.dockworker-ai.pages.dev
+          BASE_URL: https://dockworker.ai
         continue-on-error: true
 
       - name: Upload Playwright report
