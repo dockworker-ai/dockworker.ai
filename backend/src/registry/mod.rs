@@ -8,7 +8,7 @@ pub mod storage;
 use axum::{
     body::Body,
     extract::{Path, Request, State},
-    http::{header, HeaderMap, Method, StatusCode},
+    http::{header, Method, StatusCode},
     response::{IntoResponse, Response},
     routing::get,
     Json, Router,
@@ -266,7 +266,7 @@ fn method_not_allowed() -> Response {
 mod tests {
     use super::*;
     use axum::body::Body;
-    use axum::http::Request;
+    use axum::http::{HeaderMap, Request};
     use storage::sha256_digest;
     use tempfile::TempDir;
     use tower::ServiceExt;
