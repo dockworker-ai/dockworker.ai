@@ -1,4 +1,4 @@
-use crate::models::{UserTier, UserQuota};
+use crate::models::{UserQuota, UserTier};
 
 pub fn get_monthly_minutes(tier: &UserTier) -> i32 {
     match tier {
@@ -20,9 +20,9 @@ pub fn get_max_concurrent(tier: &UserTier) -> i32 {
 
 pub fn get_max_build_time_seconds(tier: &UserTier) -> i32 {
     match tier {
-        UserTier::Free => 600,      // 10 minutes
-        UserTier::Pro => 1800,      // 30 minutes
-        UserTier::Team => 3600,     // 1 hour
+        UserTier::Free => 600,        // 10 minutes
+        UserTier::Pro => 1800,        // 30 minutes
+        UserTier::Team => 3600,       // 1 hour
         UserTier::Enterprise => 7200, // 2 hours
     }
 }

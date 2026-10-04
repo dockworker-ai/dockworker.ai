@@ -1,12 +1,12 @@
+use crate::{db::Database, models::*};
 use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::IntoResponse,
     Json,
 };
-use std::sync::Arc;
-use crate::{db::Database, models::*};
 use serde_json::json;
+use std::sync::Arc;
 
 pub async fn trigger(
     State(_db): State<Arc<Database>>,
@@ -34,9 +34,7 @@ pub async fn stream_logs(
     (StatusCode::OK, "")
 }
 
-pub async fn list_user_builds(
-    State(_db): State<Arc<Database>>,
-) -> impl IntoResponse {
+pub async fn list_user_builds(State(_db): State<Arc<Database>>) -> impl IntoResponse {
     // TODO: List user's builds from DB
     (StatusCode::OK, Json(json!({"builds": []})))
 }
