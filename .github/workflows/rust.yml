@@ -63,6 +63,10 @@ jobs:
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
 
+      - name: Resolve the lockfile
+        working-directory: backend
+        run: cargo update
+
       - name: Audit dependencies
         working-directory: backend
         run: cargo audit
