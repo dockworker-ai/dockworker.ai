@@ -90,7 +90,11 @@ impl BuildRunnerService {
         Ok(ReceiverStream::new(rx))
     }
 
-    async fn await_active_pod(&self, pods: &Api<Pod>, build_id: &str) -> Result<String, RunnerError> {
+    async fn await_active_pod(
+        &self,
+        pods: &Api<Pod>,
+        build_id: &str,
+    ) -> Result<String, RunnerError> {
         let lp = ListParams::default()
             .labels(&format!("dockworker.ai/build-id={build_id}"))
             .timeout(60);
