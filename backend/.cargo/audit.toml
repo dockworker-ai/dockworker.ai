@@ -1,0 +1,7 @@
+[advisories]
+ignore = [
+    # rsa is an unused optional dependency of sqlx-mysql. This crate enables
+    # only the postgres driver, so rsa is not compiled. RustSec has no fixed
+    # upgrade for RUSTSEC-2023-0071.
+    "RUSTSEC-2023-0071",
+]

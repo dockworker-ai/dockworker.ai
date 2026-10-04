@@ -1,20 +1,10 @@
-mod api;
-mod auth;
-mod config;
-mod db;
-mod models;
-mod quota;
-mod registry;
-mod runner_controller;
-mod runner_job;
-
 use axum::{
     routing::{get, post},
     Router,
 };
+use dockworker_control_plane::{api, config, db, registry};
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
-use tracing_subscriber;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

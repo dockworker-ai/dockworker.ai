@@ -9,16 +9,13 @@ tokio = { version = "1", features = ["full"] }
 tokio-stream = "0.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres"] }
-tonic = "0.11"
-prost = "0.12"
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres"] }
 tower = "0.4"
 tower-http = { version = "0.5", features = ["cors", "trace"] }
 tracing = "0.1"
 tracing-subscriber = "0.3"
 uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
-dotenv = "0.15"
 anyhow = "1"
 thiserror = "1"
 kube = { version = "0.93", features = ["runtime", "client"] }
