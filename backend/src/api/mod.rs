@@ -1,7 +1,7 @@
+pub mod admin;
 pub mod auth;
 pub mod builds;
 pub mod user;
-pub mod admin;
 
 use axum::http::StatusCode;
 use axum::Json;

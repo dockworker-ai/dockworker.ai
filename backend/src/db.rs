@@ -1,5 +1,5 @@
-use sqlx::postgres::PgPool;
 use anyhow::Result;
+use sqlx::postgres::PgPool;
 
 pub struct Database {
     pool: PgPool,
@@ -18,9 +18,7 @@ impl Database {
 
     pub async fn migrate(&self) -> Result<()> {
         // Run migrations
-        sqlx::migrate!("./migrations")
-            .run(&self.pool)
-            .await?;
+        sqlx::migrate!("./migrations").run(&self.pool).await?;
         Ok(())
     }
 }

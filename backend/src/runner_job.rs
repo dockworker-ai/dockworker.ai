@@ -21,10 +21,22 @@ pub fn create_runner_job_manifest(params: &BuildJobParams, namespace: &str) -> J
     let job_name = format!("dockworker-build-{}", params.build_id);
 
     let mut labels = BTreeMap::new();
-    labels.insert("app.kubernetes.io/name".to_string(), "dockworker-build".to_string());
-    labels.insert("app.kubernetes.io/component".to_string(), "build-runner".to_string());
-    labels.insert("dockworker.ai/build-id".to_string(), params.build_id.clone());
-    labels.insert("dockworker.ai/tenant-id".to_string(), params.tenant_id.clone());
+    labels.insert(
+        "app.kubernetes.io/name".to_string(),
+        "dockworker-build".to_string(),
+    );
+    labels.insert(
+        "app.kubernetes.io/component".to_string(),
+        "build-runner".to_string(),
+    );
+    labels.insert(
+        "dockworker.ai/build-id".to_string(),
+        params.build_id.clone(),
+    );
+    labels.insert(
+        "dockworker.ai/tenant-id".to_string(),
+        params.tenant_id.clone(),
+    );
 
     let mut buildctl_args = vec![
         "build".to_string(),
@@ -50,12 +62,18 @@ pub fn create_runner_job_manifest(params: &BuildJobParams, namespace: &str) -> J
     let mut requests = BTreeMap::new();
     requests.insert("cpu".to_string(), Quantity("1500m".to_string()));
     requests.insert("memory".to_string(), Quantity("2Gi".to_string()));
-    requests.insert("ephemeral-storage".to_string(), Quantity("10Gi".to_string()));
+    requests.insert(
+        "ephemeral-storage".to_string(),
+        Quantity("10Gi".to_string()),
+    );
 
     let mut limits = BTreeMap::new();
     limits.insert("cpu".to_string(), Quantity("2000m".to_string()));
     limits.insert("memory".to_string(), Quantity("4Gi".to_string()));
-    limits.insert("ephemeral-storage".to_string(), Quantity("18Gi".to_string()));
+    limits.insert(
+        "ephemeral-storage".to_string(),
+        Quantity("18Gi".to_string()),
+    );
 
     Job {
         metadata: ObjectMeta {
