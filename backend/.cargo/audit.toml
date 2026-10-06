@@ -1,0 +1,7 @@
+[advisories]
+ignore = [
+    # sqlx 0.8.6 still resolves sqlx-mysql (and rsa) in Cargo.lock even when
+    # only the postgres feature is enabled. rsa is not compiled into this
+    # binary. RustSec has no fixed upgrade for RUSTSEC-2023-0071.
+    "RUSTSEC-2023-0071",
+]
