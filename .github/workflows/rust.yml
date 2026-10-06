@@ -28,7 +28,7 @@ jobs:
 
       - name: Run tests
         working-directory: backend
-        run: cargo test --verbose
+        run: cargo test --locked --verbose
 
       - name: Check formatting
         working-directory: backend
@@ -36,7 +36,7 @@ jobs:
 
       - name: Lint with clippy
         working-directory: backend
-        run: cargo clippy -- -D warnings
+        run: cargo clippy --locked -- -D warnings
 
   build:
     runs-on: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
 
       - name: Build backend
         working-directory: backend
-        run: cargo build --release --verbose
+        run: cargo build --locked --release --verbose
 
   security-audit:
     runs-on: ubuntu-latest
@@ -62,10 +62,6 @@ jobs:
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
-
-      - name: Resolve the lockfile
-        working-directory: backend
-        run: cargo update
 
       - name: Audit dependencies
         working-directory: backend
