@@ -1,0 +1,80 @@
+# LOR-512 — CNCF Distribution registry deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dockworker-registry
+  namespace: dockworker-system
+  labels:
+    app: dockworker-registry
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: dockworker-registry
+  template:
+    metadata:
+      labels:
+        app: dockworker-registry
+    spec:
+      containers:
+        - name: registry
+          image: distribution/distribution:2.8.3
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: dockworker-registry-r2-creds
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dockworker-registry-r2-creds
+                  key: AWS_SECRET_ACCESS_KEY
+          volumeMounts:
+            - name: config
+              mountPath: /etc/docker/registry/config.yml
+              subPath: config.yml
+              readOnly: true
+            - name: auth
+              mountPath: /etc/docker/registry/auth/htpasswd
+              subPath: htpasswd
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+        - name: config
+          secret:
+            secretName: dockworker-registry-config
+            items:
+              - key: config.yml
+                path: config.yml
+        - name: auth
+          secret:
+            secretName: dockworker-registry-htpasswd
+            items:
+              - key: htpasswd
+                path: htpasswd
