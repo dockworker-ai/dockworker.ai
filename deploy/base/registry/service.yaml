@@ -1,0 +1,17 @@
+# LOR-512 — ClusterIP service on :5000
+apiVersion: v1
+kind: Service
+metadata:
+  name: dockworker-registry-svc
+  namespace: dockworker-system
+  labels:
+    app: dockworker-registry
+spec:
+  type: ClusterIP
+  selector:
+    app: dockworker-registry
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+      protocol: TCP
