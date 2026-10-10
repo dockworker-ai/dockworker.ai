@@ -1,0 +1,14 @@
+# LOR-511/512/513 — namespaces
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dockworker-system
+  labels:
+    app.kubernetes.io/part-of: dockworker-registry
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dockworker-runners
+  labels:
+    app.kubernetes.io/part-of: dockworker-registry
