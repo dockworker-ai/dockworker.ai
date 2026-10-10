@@ -10,6 +10,8 @@ kind: Kustomization
 resources:
   # Namespaces (LOR-511/512/513)
   - runners/namespaces.yaml
+  # Cloudflare Tunnel: zero-egress ingress routing daemon (LOR-510)
+  - tunnel/cloudflared.yaml
   # Registry: htpasswd + config.yml (R2 S3 driver) + R2 credential secret (LOR-511)
   - registry/secrets.yaml
   # Registry: CNCF Distribution deployment (LOR-512)
