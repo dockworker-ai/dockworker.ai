@@ -37,9 +37,16 @@ spec:
               mountPath: /workspace/Dockerfile
               subPath: Dockerfile
               readOnly: true
+            - name: docker-config
+              mountPath: /kaniko/.docker/config.json
+              subPath: .dockerconfigjson
+              readOnly: true
       containers:
         - name: verify-digest
           image: gcr.io/go-containerregistry/crane:debug
+          env:
+            - name: DOCKER_CONFIG
+              value: /root/.docker
           command:
             - /bin/sh
             - -c
@@ -48,7 +55,15 @@ spec:
               DIGEST=$(crane digest registry.dockworker.ai/probe/dockworker-probe-001:latest)
               echo "probe image digest: $DIGEST"
               test -n "$DIGEST"
+          volumeMounts:
+            - name: docker-config
+              mountPath: /root/.docker/config.json
+              subPath: .dockerconfigjson
+              readOnly: true
       volumes:
         - name: dockerfile
           configMap:
             name: probe-dockerfile
+        - name: docker-config
+          secret:
+            secretName: dockworker-free-push-token
