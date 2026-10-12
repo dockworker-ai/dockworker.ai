@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "cd frontend && bun run dev",
+    "dev:landing": "node landing/scripts/build.mjs && bunx serve frontend/dist -l 3000",
     "build": "cd frontend && bun run build",
     "test": "cd backend && cargo test && cd .. && bun run test:e2e",
     "test:e2e": "playwright test",

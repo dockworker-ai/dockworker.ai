@@ -1,0 +1,9 @@
+{
+  "name": "dockworker-landing",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Marketing site (Figma export) for dockworker.ai — Cloudflare Pages production build",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  }
+}

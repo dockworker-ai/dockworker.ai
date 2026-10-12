@@ -29,7 +29,7 @@ export default defineConfig({
   webServer: process.env.BASE_URL
     ? undefined
     : {
-        command: 'npm run dev',
+        command: 'node landing/scripts/build.mjs && bunx serve frontend/dist -l 3000',
         url: 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
         timeout: 120000,
