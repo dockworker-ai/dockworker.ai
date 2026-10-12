@@ -1,0 +1,29 @@
+# Zero-egress OCI registry (CNCF Distribution + Cloudflare R2) — base kustomization
+# Linear: Dockworker Zero-Egress OCI Registry (P-LOR-4), issues LOR-510..514
+#
+# Apply order matters: namespaces first, then secrets/config, then workloads.
+# Secrets in registry/secrets.yaml and runners/push-secret.yaml carry
+# PLACEHOLDER credentials — inject real values at apply time, never commit them.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # Namespaces (LOR-511/512/513)
+  - runners/namespaces.yaml
+  # Cloudflare Tunnel: zero-egress ingress routing daemon (LOR-510)
+  - tunnel/cloudflared.yaml
+  # Registry: htpasswd + config.yml (R2 S3 driver) + R2 credential secret (LOR-511)
+  - registry/secrets.yaml
+  # Registry: CNCF Distribution deployment (LOR-512)
+  - registry/deployment.yaml
+  # Registry: ClusterIP :5000 (LOR-512)
+  - registry/service.yaml
+  # Registry: registry.dockworker.ai ingress (LOR-512)
+  - registry/ingress.yaml
+  # Runners: dockworker-free-push-token (LOR-513)
+  - runners/push-secret.yaml
+  # Runners: probe verification job (LOR-514)
+  - runners/probe-job.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: dockworker-registry
