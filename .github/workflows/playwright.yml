@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
     paths:
       - 'frontend/**'
+      - 'landing/**'
       - 'e2e/**'
       - 'playwright.config.ts'
       - '.github/workflows/playwright.yml'
@@ -12,6 +13,7 @@ on:
     branches: [main, develop]
     paths:
       - 'frontend/**'
+      - 'landing/**'
       - 'e2e/**'
       - 'playwright.config.ts'
       - '.github/workflows/playwright.yml'
@@ -74,7 +76,7 @@ jobs:
         run: |
           # Wait up to 5 minutes for production deployment to be ready
           for i in {1..30}; do
-            if curl -s https://dockworker.ai > /dev/null; then
+            if curl -sf -o /dev/null -w '' https://dockworker.ai && curl -sf https://dockworker.ai | grep -q 'Build once'; then
               echo "Production deployment ready"
               exit 0
             fi

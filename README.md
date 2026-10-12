@@ -5,7 +5,8 @@ Production-grade multi-tenant container build platform. Free tier: each build is
 | Path | What it is |
 | --- | --- |
 | [`backend/`](backend/) | Control plane (Rust/Axum + gRPC, Kubernetes API integration, log streaming). |
-| [`frontend/`](frontend/) | Console & landing page (React, Zustand, Tailwind). |
+| [`landing/`](landing/) | **Production** marketing site (Figma export → CF Pages). |
+| [`frontend/`](frontend/) | Console SPA (React, Zustand, Tailwind) — not deployed on apex yet. |
 | [`e2e/`](e2e/) | Playwright E2E tests for CF Pages deployment. |
 | [`k8s/`](k8s/) | Phase 1 sandbox infrastructure (namespace, quotas, network policy, test jobs). |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Production architecture spec (hardened design, unit economics, 12-week roadmap). |
